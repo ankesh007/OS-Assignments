@@ -1,0 +1,154 @@
+
+<!-- saved from url=(0057)http://www.cse.iitd.ernet.in/~kumarsandeep/col331/assig1/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><h1><center>COL331, COL633, ELL405: Operating System <br> Assignment 1: Process management and system calls [10 Marks]</center></h1>
+<h3>Due Date: 18 Feb 2017, 23:55</h3>
+<p>&nbsp;</p>
+<h3>Operating System</h3>
+<p>We recommend using Ubuntu for doing all the assignments. The setup part is little tricky on Windows and Mac based system. Install Instructions for Ubuntu can be found <a href="http://www.cse.iitd.ernet.in/~kumarsandeep/col331/assig1/ubuntuinstructions.pdf">here.</a></p>
+<h3>Qemu</h3>
+<p>QEMU is a free and open-source hosted hypervisor that performs hardware virtualization. We will use Qemu to run the xv6. A small write up on <strong>qemu</strong> and <strong>make</strong> command can be found <a href="http://www.cse.iitd.ernet.in/~kumarsandeep/col331/assig1/qemu_makefile_tutorial.pdf">here</a>.</p>
+<h2>xv6 Installation and Setup</h2>
+<h4>Update:</h4>Updated tar ball with modified check.sh to fix \r and \r\n issues.<br>
+<p>Download xv6 setup from the following <a href="http://www.cse.iitd.ernet.in/~kumarsandeep/col331/assig1/xv6-os-assig1.1.tar.gz">link</a>.</p>
+<p>This tar ball contains the original xv6 code and</p>
+<p><em>assig1_1, assig1_3 and assig1_5</em> user programs to check the implementstion. (2 4 6 are hidden cases which will be run after the submission). Some modifications are needed to the Makefile for this.&nbsp;More on this can be found&nbsp;<a href="http://www.cse.iitd.ernet.in/~kumarsandeep/col331/assig1/#check">here</a></p>
+<p><em>out_assig1_1,out_assig1_3,&nbsp;out_assig1_5</em> expected output for the respective user programs.</p>
+<p><strong>check.sh</strong>: To check the implementation.&nbsp;</p>
+<p><strong>submit.sh</strong>: This will create a tar ball which you have to submit on Moodle.</p>
+<p><strong>test_assig1.sh:&nbsp;</strong>To run the user program. eg: to run the user program assig1_1, run</p>
+<blockquote>
+<p>./test_assig1.sh assig1_1</p>
+</blockquote>
+<h4>Installtion Instructions</h4>
+<p>Commands to build and run the xv6.</p>
+<ul>
+<li>Install Qemu
+<ul>
+<li>On 32 bit systems:&nbsp;</li>
+<li><strong>sudo apt-get install&nbsp;qemu-system-i386&nbsp;</strong></li>
+<li>On 64 bit systems:</li>
+<li><strong>sudo apt-get install&nbsp;qemu-system-x86_64</strong></li>
+</ul>
+</li>
+<li>Decompress the downloaded tar ball.<br>
+<ul>
+<li>cd xv6-os-assig1</li>
+<li>To build xv6, run</li>
+<li><strong>make</strong></li>
+<li>To run in qemu, run</li>
+<li><strong>make qemu-nox</strong></li>
+</ul>
+</li>
+</ul>
+<!-- <p>Download xv6 setup from the following <a href="https://github.com/mit-pdos/xv6-public">link</a>. The installation instructions are available in the README file.</p> -->
+<h2>Part 1: System Call tracing [2 Marks]</h2>
+<p>Your first task is to modify the xv6 kernel to print out a line for each system call invocation. Please note no new system call has to be added for this part. Print the name of the system call and the number of times it has been called in the following format:</p>
+<pre class="xyz">&lt;System Call Name&gt;  &lt;count&gt;<br>eg:<br>sys_fork 10</pre>
+<p>The system calls issued on booting the xv6 and the number of times they are called, is same all the time. Hence, your implementation should print the same sequence every time. Expected output can be seen in the file&nbsp;<em>out_assig1_1&nbsp;</em>for reference purposes. We will use some other hidden test cases, whose output will <em><strong>different</strong></em> to make sure that the implmentation is correct and not just a bunch of&nbsp;<em>printf</em> statements.</p>
+<h4>Part 1 (b) Add sys_toggle() system call</h4>
+<p>After you are done with the part a of the assignment, every time you boot or issue some command, you will see system trace printed on the screen, which makes it difficult to see the output of some other command. Hence, as part b, you will have to implement, a&nbsp;<strong>sys_toggle()</strong><em>&nbsp;</em>system call, which will toggle the system trace. If it is ON, it will switch it OFF, and vice versa. By default, when xv6 boots, it should be ON.</p>
+<p>After the system call implementation is done, you need a&nbsp;<em>user program&nbsp;</em>to actually make the system call. It can be named anything. Assuming you want to add&nbsp;<em>user_toggle</em><strong>&nbsp;</strong>user program to xv6, you need to create a file name&nbsp;<em>user_toggle.c</em>, whose contents will be like:</p>
+<pre class="xyz">#include "types.h"
+#include "user.h"
+#include "date.h"
+
+int
+main(int argc, char *argv[])
+{<br>  // If you follow the naming convetion, system call name will be sys_toggle and you <br>  // call it by calling <br>  // <strong>toggle();</strong>
+
+  exit();
+}</pre>
+<h4>Adding a user program to xv6</h4>
+<ul>
+<li>Create user_toggle.c in the xv6 directory.</li>
+<li>Add a line <tt>"_user_toggle\"</tt> to Makefile. Your Makefile should look like this
+<pre class="xyz">UPROGS=\
+    _cat\
+    _echo\
+    _forktest\
+    _grep\
+    _init\
+    _kill\
+    _ln\
+    _ls\
+    _mkdir\
+    _rm\
+    _sh\
+    _stressfs\
+    _usertests\
+    _wc\
+    _zombie\
+    <strong>_user_toggle\</strong>
+</pre>
+</li>
+<li>Also make changes to the Makefile as following:
+<pre class="xyz">EXTRA=\
+    <strong>user_toggle.c\</strong>
+    mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
+    ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
+    printf.c umalloc.c\
+    README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
+    .gdbinit.tmpl gdbutil\
+</pre>
+</li>
+<li>Now, enter the following commands:
+<pre class="xyz"><strong>make clean</strong>
+<strong>make</strong></pre>
+</li>
+<li>If you want to test the user program, launch xv6 using command<br>
+<ul>
+<li>make qemu-nox</li>
+<li>After xv6 has booted in the new terminal, you can type</li>
+<li><strong>ls&nbsp;</strong>(this will be with system traces, implemented in part a)&nbsp;</li>
+<li>This will show the user_toggle in the list of available programs, call it using</li>
+<li><strong>user_toggle</strong></li>
+<li>To make sure it worked, try ls command again, which should be free of the system traces.</li>
+</ul>
+</li>
+<li>You can also run user program using the test_assig1.sh script
+<ul>
+<li>eg: <strong>./test_assig1.sh user_toggle</strong></li>
+</ul>
+</li>
+</ul>
+<pre class="xyz">&nbsp;</pre>
+<h2>Part 2: sys_add() System Call [2 Marks]</h2>
+<p>In this part you have to add a new system call to xv6. This system call should take two integer arguments and return their sum.</p>
+<p>You should add a system call named, <strong>sys_add()</strong>&nbsp;to xv6 and then create a user-level program to test it. You can use user, program provided by us which is called <strong>assig1_3.c</strong> that calls your new system call.</p>
+<h2>Part 3: sys_ps() System Call [6 Marks]</h2>
+<p>In this part you have to add a new system call <strong>sys_ps()</strong>, to print a list of all the current running processes in the following format:</p>
+<pre class="xyz">pid:&lt;Process-Id&gt; name:&lt;Process Name&gt;
+...
+...<br>eg:<br>pid:1 name:init</pre>
+<p>Similarly for this part, create a new user program, which should in turn call your <tt>sys_ps()</tt> system call, or you can use assig1_5.c provided by us.</p>
+<h2>Part 4: Two page report.</h2>
+<p>Create a two page report, briefly explaining the code. This should list any new variables or data structures added by you along with their usage.</p>
+<div id="check">
+<h2>Checking the Code</h2>
+<p>There is a <strong>check.sh</strong> present in the code, which will compile the code and run some predefined test cases on the code. Make sure it passes the test cases before submitting. This also verifies that you have followed the naming conventions. Uncomment the following lines in <strong>Makefile</strong> at 177, when you complete the part 1,2 and 3 respectively. <br> # _assig1_1\ <br> # _assig1_3\ <br> # _assig1_5\ <br><br> To run the "<strong>check"</strong> script you need to install <em>expect</em>. Use the following command on Ubuntu:</p>
+<p><strong>sudo apt install expect</strong></p>
+<p style="color: red;"><strong>Note:</strong></p>
+<ul>
+<li style="color: red;">There will be some more hidden testcases on which your code will be evaluated.</li>
+<li style="color: red;">Please make sure that you follow the naming convention mentioned above for system calls, otherwise the test cases will fail and you will receive no marks for that.</li>
+<li style="color: red;">We will run Moss on the submissions. We will also include submissions from other sources (past year or Internet). Any cheating will result in a zero in the assignment, a penalty as per the course policy and possibly much stricter penalties (including a fail grade and/or a DISCO).</li>
+<li style="color: red;">There will be NO demo for assignment 1. Your code will be evaluated using check script (check.sh) on hidden test cases and marks will be awarded based on that.&nbsp;</li>
+<li style="color: red;">No marks will be awarded if you do not follow the required format (naming conventions).</li>
+</ul>
+<h2>Submission Instructions</h2>
+<ul>
+<li>Run
+<ul>
+<li><strong>submit.sh.</strong> This takes two arguments, Entry Number and path to the report file.</li>
+<li>eg:<strong> ./submit.sh 2017ANZ8353 report.pdf</strong></li>
+<li>This will create a tar ball 2017ANZ8353.tar.gz</li>
+</ul>
+</li>
+<li>Submit the generated tar ball&nbsp; on Moodle.</li>
+</ul>
+</div>
+<h4>References</h4>
+<ul>
+<li>Vim Tutorial: <a href="http://www.cse.iitd.ernet.in/~kumarsandeep/col331/assig1/vimTutorial.pdf" target="blank">Click Here</a></li>
+</ul>
+<link rel="stylesheet" type="text/css" href="chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/css/content.css"></body><loom-container id="lo-engage-ext-container"><loom-shadow data-reactroot="" class="resolved"></loom-shadow></loom-container></html>
