@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath,mathpazo}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{commath}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{grffile}
+
+\geometry{
+  top=20mm,
+}
+\newcommand{\boldvec}[1]{\boldsymbol{\vec{\textbf{#1}}}}
+\newcommand{\capvec}[1]{\boldsymbol{\hat{\textbf{#1}}}}
+\newcommand{\bld}[1]{\textbf{#1}}
+\newcommand{\ital}[1]{\textit{#1}}
+\newcommand{\italb}[1]{\textbf{\textit{#1}}}
+\begin{document}
+
+\title{Operating Systems- COL331 \\Assignment 1}
+\author{Ankesh Gupta\\2015CS10435}
+
+\date{}
+\maketitle
+
+\section*{Part 1}
+\bld{Pointers on System call Trace:}
+\begin{enumerate}
+	\item We had to trace system calls made by xv6 while its operating. 
+	\item System calls in xv6 are uniquely identified by an identifier, an integer. So, to print name of the call, a mapping was maintained between unique system call id and its name. 
+	\item The mapping was stored in \italb{array data structure}, which mapped system call name indexed by \ital{unique call id.}
+	\item Also, as asked, another \ital{(integer)array data structure} was maintained which kept track of system call count, i.e., how many times a particular system call has been invoked since the OS(emulator) began.
+	\item As soon as any system call is invoked, array's corresponding index was $incremented.$
+	\item The reason for choosing array data structure was that the unique id's assigned to system calls were $contiguous$. Other data structures can also easily handle this task, but array is quite a simple and intuitive choice for the problem.
+	\item The data structures are marked $static$ as they have no role outside the module.
+	\item Mapping array was named $syscall\_names$. Counter array was named $call\_count$.
+\end{enumerate}
+\bld{Pointers on Toggling System calls}
+\begin{enumerate}
+	\item As a continuation, we had to create a system call which can $toggle$ tracing system calls.
+	\item A $flag(variable)$ was introduced which maintained the current toggling. The variable was externed so that they are visible from external modules.
+	\item Requisite changes were made in file $usys.S$ so that the system call can be recognized and correct system call id is put in \ital{eax register}.
+	\item Header $syscall.h$ was also changed to allocate an unique id to new system call.
+	\item Header $user.h$ was changed so that the system call is visible to user program.
+	\item Actual implementation of system call was done in $sysproc.c$ to keep with convention. Here the state of toggle flag is reversed.
+	\item Necessary modifications were made in $syscall.c$ so that the new system call is visible to kernel, and when called, kernel realizes what instructions to execute. 
+	\item Flag was named $toggle\_flag$.
+\end{enumerate}
+
+\section*{Part 2}
+\bld{Pointers on add System Call}
+\begin{enumerate}
+	\item In this, a system call was added which returns sum of 2 numbers.
+	\item This implementation helped understand how to pass arguments to system call, and how to use them in while implementing system call $handler$.
+	\item All implementation details are similar as mentioned in above case of adding sys\_toggle system call.
+	\item Only difference is the way we get parameters. A call to $argint$ method was made which returns the $i^{th}$ system call argument($i$ is sent while invocation).
+	\item 2 calls were made and the sum was returned, which was placed in \ital{eax register}.
+	\item No extra variables or data structures were introduced. Only few look-up's were updated. 
+\end{enumerate}
+
+\section*{Part 3}
+\bld{Pointers on printing currently running processes}
+\begin{enumerate}
+	\item We were required to list process id and process name for processes with running, runnable or sleeping state.
+	\item Implementation details are again similar to above implementations.
+	\item We required access to $ptable$, a structure which tracked states of all the processes. 
+	\item Since it was available in $proc.c$ module, a method was declared which used it to list the required processes.
+	\item The method was also externed in $sysproc.c$ so that its visible in the file and can be accessed.
+	\item While printing, process's state was monitored and it was listed if: $$process->state \in \{RUNNABLE,RUNNING,SLEEPING\}$$
+	\item Again, no new variables and data structures were introduced. Just few look-up's were updated.
+\end{enumerate}
+
+\end{document}
