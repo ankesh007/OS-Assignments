@@ -24,7 +24,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int toggle(void);
-int add(int a,int b);
+int add(int,int);
 int ps(void);
 
 // ulib.c

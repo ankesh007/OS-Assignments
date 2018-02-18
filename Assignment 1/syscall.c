@@ -104,7 +104,7 @@ extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_toggle(void);
-extern int sys_add(int a,int b);
+extern int sys_add(void);
 extern int sys_ps(void);
 
 static int (*syscalls[])(void) = {
@@ -131,7 +131,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_toggle]  sys_toggle,
 [SYS_ps]      sys_ps,
-// [SYS_add]     sys_add,
+[SYS_add]     sys_add,
 };
 static int call_count[30];
 static char* syscall_names[]={"","sys_fork","sys_exit","sys_wait","sys_pipe","sys_read","sys_kill","sys_exec","sys_fstat","sys_chdir","sys_dup","sys_getpid","sys_sbrk","sys_sleep","sys_uptime","sys_open","sys_write","sys_mknod","sys_unlink","sys_link","sys_mkdir","sys_close","sys_toggle","sys_ps","sys_add"};
@@ -156,18 +156,18 @@ syscall(void)
     curproc->tf->eax = syscalls[num]();
  
   } 
-    else if(num==24)
-    {
-      call_count[num]++;
-      if(toggle_flag==1)
-        cprintf("%s %d\n",syscall_names[num],call_count[num]);
+    // else if(num==24)
+    // {
+    //   call_count[num]++;
+    //   if(toggle_flag==1)
+    //     cprintf("%s %d\n",syscall_names[num],call_count[num]);
 
-      int temp_a,temp_b;
-      argint(0,&temp_a);
-      argint(1,&temp_b);
-      // cprintf("bor %d %d der",temp_a,temp_b);
-      curproc->tf->eax=sys_add(temp_a,temp_b);
-    }
+    //   // int temp_a,temp_b;
+    //   // argint(0,&temp_a);
+    //   // argint(1,&temp_b);
+    //   // cprintf("bor %d %d der",temp_a,temp_b);
+    //   curproc->tf->eax=sys_add();
+    // }
 
     else {
     cprintf("%d %s: unknown sys call %d\n",

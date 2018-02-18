@@ -90,7 +90,7 @@ sys_uptime(void)
   return xticks;
 }
 
-int toggle_flag;
+extern int toggle_flag;
 
 int 
 sys_toggle(void)
@@ -103,28 +103,34 @@ sys_toggle(void)
 }
 
 int 
-sys_add(int a,int b)
+sys_add(void)
 {
+  int a,b;
+  argint(0,&a);
+  argint(1,&b);
   return (a+b);
 }
 
-struct {
-  struct spinlock lock;
-  struct proc proc[NPROC];
-} ptable;
+// struct {
+//   struct spinlock lock;
+//   struct proc proc[NPROC];
+// } ptable;
+
+extern void ps();
 
 int
-sys_ps()
+sys_ps(void)
 {
-  // cprintf("HI\n");
-  struct proc *p;
+  ps();
+  // struct proc *p;
 
-  acquire(&ptable.lock);
+  // acquire(&ptable.lock);
 
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == RUNNABLE || p->state==RUNNING || p->state==SLEEPING)
-      cprintf("pid:%d name:%s\n",p->pid,p->name);
+  // for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  //   if(p->state == RUNNABLE || p->state==RUNNING || p->state==SLEEPING)
+  //     cprintf("pid:%d name:%s\n",p->pid,p->name);
 
-  release(&ptable.lock);
+  // release(&ptable.lock);
+
   return 1;
 }
