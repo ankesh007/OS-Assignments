@@ -1,0 +1,14 @@
+1. {ctrl a} + x -> direct exit
+2. {ctrl a} + c -> qemu
+3. quit in qemu
+
+***************
+For System Call:
+
+1. usys.S
+2. sysproc.c
+3. maybe(proc.c) -> if you implement a system call using ptable stuffs.
+4. user.h -> with correct fn. declaration
+5. syscall.c -> extern (and toggle)
+6. syscall.h -> add a system call number
+********************

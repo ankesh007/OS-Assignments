@@ -1,0 +1,78 @@
+
+<!-- saved from url=(0053)http://www.cse.iitd.ernet.in/~ismiabidi/col331/assig2 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><h1><center>COL331, COL633, ELL405: Operating System <br> Assignment 2: Priority Scheduler [12 Marks]</center></h1>
+<h3>Due Date: 29 March 2018</h3>
+<p>&nbsp;</p>
+<h3>Update</h3>
+<p>Make the following changes in the source code</p>
+<ul>
+<li>Change the value of <strong>NCPU from 8 to 2</strong> in file <em>param.h</em></li>
+<li>Change the value of <strong>system_trace_on from 1 to 0</strong> in file <em>syscall.c </em> </li>
+</ul>
+<p><strong>Download new input and checker files from the following <a href="http://www.cse.iitd.ernet.in/~ismiabidi/col331/xv6-os-assig2.1.tar.gz">link</a>.</strong></p>
+<p>This tar ball contains
+</p><p><em>assig2_1, assig2_2, assig2_3 and <a href="http://www.cse.iitd.ernet.in/~ismiabidi/col331/assig2_4.c">assig2_4</a></em> user programs to check the implementation (some hidden cases which will be run after the submission).&nbsp; Do required modifications in the Makefile for this.&nbsp;</p>
+<p><em>out_assig2_1 and out_assig2_2 </em> are the expected output for the respective user programs. NOTE: There is no output file for test case 3 and 4.</p>
+<p><strong>check1.py, check2.py, check3.py and <a href="http://www.cse.iitd.ernet.in/~ismiabidi/col331/check4.py">check4.py</a> </strong>: To check the implementation of the respective user program.&nbsp;</p>
+<p><strong>submit.sh</strong>: This will create a tar ball which you have to submit on Moodle.</p>
+<p><strong>test_assig2.sh:&nbsp;</strong>To run the user program. eg: to run the user program assig2_1, run</p>
+<blockquote>
+<p>./test_assig2.sh assig2_1</p>
+</blockquote>
+
+<h2>Part 1: Add and print priority of the process [3 Marks]
+</h2><h3>Part 1 (a)Modify sys_ps to print priority [1 Marks]</h3>
+<p>Your first task is to modify the sys_ps from assignment 1 to print priority for each process. The following format has to be followed:</p>
+<pre class="xyz">pid: &lt; Process-Id &gt; name:&lt; Process-Name &gt; state: &lt; Process-State &gt; priority:&lt; Priority &gt;</pre>
+<p>For this part, create a new user program, which should in turn call your sys_ps() system call, or you can use assig2_1.c provided by us. The expected output can be seen in the file&nbsp;<em>out_assig2_1&nbsp;</em>for reference purposes. We will use some other hidden test cases also.</p>
+<h3>Part 1 (b) Add sys_setpriority system call [2 Marks]</h3>
+<p>After you are done with the part a of the assignment, the priority of each processes will be set to a default value (5).</p>
+In this part, you will add a new system call (setpriority) for the process to change its priority. It will take 2 arguments, pid and priority of the process, and then set the priority of the process to given value. 
+<p>After the system call implementation is done, you need a&nbsp;<em>user program&nbsp;</em>to actually make the system call. You can also use user program provided by us called as assig2_2.c.</p>
+It can be called as:
+<pre class="xyz">assign2_2 &lt; Process-Id &gt; &lt; Priority &gt;</pre>
+
+<h2>Part 2: Implement Priority Scheduler [5 Marks]</h2>
+<p>Replace the round-robin scheduler for xv6 with a priority-based scheduler. The valid priority for a process is in the range of 1 to 20. The smaller value represents the smaller
+priority. For example, a process with a priority of 20 has the highest priority, while a process with a priority of 1 has the lowest priority. A priority-based scheduler always
+selects the process with the highest priority for execution. If there are multiple processes with the same highest priority, the scheduler uses round-robin to execute.
+</p><p>Create a user-level program to test it. You can use user program provided by us which is called <strong>assig2_3.c</strong> that calls your new system call.</p>
+The output generated can be directly checked by running <em>check3.py</em>.
+
+
+<h2>Part 3: Starvation[4 Marks]</h2>
+<h3>Part 3 (a) Add sys_getpriority system call [1 Marks]</h3>
+The system call will return the priority of the given process. It will take pid as an argument of the system call.
+<h3>Part 3 (b) Handle starvation [3 Marks]</h3>
+For each process, maintain a counter in the proc structure that is initialized to zero. It will count the total number of context switches.
+To implement starvation, modify the code of the scheduler such that after each timer interrupt (context switch), it updates the counter. When the counter becomes 50 increase the value of the priority of each process by one and reset the counter to 0. This will ensure that after some period of time, a starved process will be scheduled once.
+<p>Create a user-level program to test it. You can use user program provided by us which is called <strong>assig2_4.c</strong> that calls your new system call and handles starvation.</p>
+The output generated can be directly checked by running <em>check4.py</em>.
+
+<h2>Part 4: Two page report.</h2>
+<p>Create a two page report, briefly explaining the code. This should list any new variables or data structures added by you along with their usage.</p>
+
+<div id="check">
+<p style="color: red;"><strong>Note:</strong></p>
+<ul>
+<li style="color: red;"><strong>Please save your proc.c for Part 3 as proc_3.c. Submit both proc for part 2 (proc.c) and part 3 (proc_3.c).</strong></li>
+<li style="color: red;">Please make minimal changes to xv6; you do not want to make it hard for us to grade!</li>
+<li style="color: red;">There will be some more hidden testcases on which your code will be evaluated.</li>
+<li style="color: red;">Please make sure that you follow the naming convention mentioned above for system calls, otherwise the test cases will fail and you will receive no marks for that.</li>
+<li style="color: red;">We will run Moss on the submissions. We will also include submissions from other sources (past year or Internet). Any cheating will result in a zero in the assignment, a penalty as per the course policy and possibly much stricter penalties (including a fail grade and/or a DISCO).</li>
+<li style="color: red;">There will be NO demo for assignment 2. Your code will be evaluated using check script on hidden test cases and marks will be awarded based on that.&nbsp;</li>
+<li style="color: red;">No marks will be awarded if you do not follow the required format (naming conventions).</li>
+</ul>
+<h2>Submission Instructions</h2>
+<ul>
+<li>Run
+<ul>
+<li><strong> <a href="http://www.cse.iitd.ernet.in/~ismiabidi/col331/submit.sh">submit.sh</a></strong> This takes two arguments, Entry Number and path to the report file.</li>
+<li>eg:<strong> ./submit.sh 2017ANZ8353 report.pdf</strong></li>
+<li>This will create a tar ball 2017ANZ8353.tar.gz</li>
+</ul>
+</li>
+<li>Submit the generated tar ball&nbsp; on Moodle.</li>
+</ul>
+</div>
+<link rel="stylesheet" type="text/css" href="chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/css/content.css"></body><loom-container id="lo-engage-ext-container"><loom-shadow data-reactroot="" class="resolved"></loom-shadow></loom-container></html>

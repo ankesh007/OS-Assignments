@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath,mathpazo}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{commath}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{grffile}
+
+\geometry{
+  top=20mm,
+}
+\newcommand{\boldvec}[1]{\boldsymbol{\vec{\textbf{#1}}}}
+\newcommand{\capvec}[1]{\boldsymbol{\hat{\textbf{#1}}}}
+\newcommand{\bld}[1]{\textbf{#1}}
+\newcommand{\ital}[1]{\textit{#1}}
+\newcommand{\italb}[1]{\textbf{\textit{#1}}}
+\begin{document}
+
+\title{Operating Systems- COL331 \\Assignment 2}
+\author{Ankesh Gupta\\2015CS10435}
+
+\date{}
+\maketitle
+
+\section*{Part 1}
+\bld{Pointers on printing currently running processes}
+\begin{enumerate}
+	\item We modified printing system call which now also traces priority of each active process. 
+	\item Firstly, another field name $priority$ was added in \italb{process control block}. In our code, \ital{proc struct} was updated.
+	\item The value of priority was initialised to $5$ at time of process creation.
+	\item Printing was modified to take care of printing priority as well.
+\end{enumerate}
+\bld{Pointers on setpriority System call}
+\begin{enumerate}
+	\item As a continuation, we created a system call which can $setpriority$ of currently active processes.
+	\item A system call was implemented which takes $process\_id$ and $priority$ as parameters.
+	\item If the priority is out of range [1-20], then an error message is flagged.
+	\item Otherwise, the process that matches the pid gets its priority updated.
+\end{enumerate}
+
+\section*{Part 2}
+\bld{Pointers on implementing Priority Scheduler}
+\begin{enumerate}
+	\item This part was interesting as we replaced the default \italb{round-robin} scheduler of $xv6$ with a  \italb{priority based scheduler}.
+	\item For this, the $scheduler$ method in $proc.c$ was modified.
+	\item The tricky part was to ensure \ital{round-robin} property amongst the same priority processes.
+	\item For this, while scheduling what was done is that we start finding the \ital{first-highest} priority process, starting with next process of currently \italb{context-switched process}.
+	\item The above was done in a cyclic fashion to ensure round robin property.
+	\item If there was some process with unique highest priority, it would get picked.
+	\item Otherwise, it would pick up processes with same highest priority in cyclic fashion.
+	\item An important point is that although this new scheduler has same \italb{space efficiency}, the time complexity has increased by an \italb{order of magnitude}.
+	\item For each scheduling, we run through the entire process list and select the one with the highest priority.
+	\item The above step could be efficiently implemented using a \italb{heap}, in our case a \ital{max-heap}. This would have reduced the \italb{linear factor} to \italb{logarithmic}. But since, number of processes was low, and it was more for a proof-of-concept experiment, I went with the linear search.
+\end{enumerate}
+
+\section*{Part 3}
+\bld{Pointers on preventing Starvation}
+\begin{enumerate}
+	\item A system call was implemented which returns priority of a process, given its $process\_id$.
+	\item The implementation is similar to the one in which we were setting priority of a process.
+	\item The main part was incrementing priority of a process, if it has remain inactive for a long time, i.e., if the process hasn't been scheduled for long because of lower priority.
+	\item For this, a variable counter was introduced, which records how many \ital{context switches} has been noticed by the process since its \ital{inception}.
+	\item If this limit exceeds a threshold(50, in our case), priority of the process is increased by 1.
+	\item Since processes with same priority respects \italb{round-robin}, in some way, we are ensuring $fairness$ together in our priority scheduling, which was inherent in \italb{round-robin} type scheduler.
+	\item Whenever a context switch takes place, counter of all process with runnable state is updated.
+\end{enumerate}
+
+\italb{Note: Most of the scheduling works are only for Running and Runnable processes. Also, setting priority subsumes that the process is in valid state. This hasn't been explicitly handled}.
+
+\end{document}
